@@ -10,22 +10,28 @@
  * be DEFAULTCAPACITY defined in stack.h.
  *
  */
-template <class T> Stack<T>::Stack()
+#include <iostream>
+using namespace std;
+
+template <class T> 
+Stack<T>::Stack()
 {
-    /**
-     * @todo Your code here!
-     */
+    items = new T[DEFAULTCAPACITY];
+    num_items = 0;
+    max_items = DEFAULTCAPACITY;
 }
 
 /**
  * Destructor. Remember to free any memory allocated.
  *
  */
-template <class T> Stack<T>::~Stack()
+template <class T> 
+Stack<T>::~Stack()
 {
-    /**
-     * @todo Your code here!
-     */
+    num_items = 0;
+    max_items = 0;
+    delete[] items;
+    items = nullptr;
 }
 
 /**
@@ -40,9 +46,11 @@ template <class T> Stack<T>::~Stack()
  */
 template <class T>
 void Stack<T>::push(const T &newItem){
-    /**
-     * @todo Your code here!
-     */
+    if (size() == max_items) {
+        resize(max_items * EXPANSIONFACTOR);
+    }
+        items[num_items] = newItem;
+        num_items++;
 };
 
 /**
@@ -56,9 +64,13 @@ void Stack<T>::push(const T &newItem){
  */
 template <class T>
 T Stack<T>::pop(){
-    /**
-     * @todo Your code here!
-     */
+    T lastIn = items[num_items - 1];
+    num_items--;
+    int n = max_items / SHRINKRATE;
+    if ((max_items / EXPANSIONFACTOR) >= DEFAULTCAPACITY && num_items < n) {
+        resize(max_items/EXPANSIONFACTOR);
+    }
+    return lastIn;
 };
 
 /**
@@ -66,12 +78,10 @@ T Stack<T>::pop(){
  *
  * @see OrderingStructure::add()
  */
-template <class T> void Stack<T>::add(const T &theItem)
+template <class T> 
+void Stack<T>::add(const T &theItem)
 {
-    /**
-     * @todo Your code here! Hint: this should call another Stack function
-     *  to add the element to the Stack.
-     */
+    push(theItem);
 }
 
 /**
@@ -79,12 +89,11 @@ template <class T> void Stack<T>::add(const T &theItem)
  *
  * @see OrderingStructure::remove()
  */
-template <class T> T Stack<T>::remove()
+template <class T> 
+T Stack<T>::remove()
 {
-    /**
-     * @todo Your code here! Hint: this should call another Stack function
-     * to remove an element from the Stack and return it.
-     */
+    T lastIn = pop();
+    return lastIn;
 }
 
 /**
@@ -97,9 +106,10 @@ template <class T> T Stack<T>::remove()
  */
 template <class T>
 T Stack<T>::peek(){
-    /**
-     * @todo Your code here!
-     */
+    if (!isEmpty()) {
+        return items[num_items - 1];
+    }
+    return 0;
 };
 
 /**
@@ -109,9 +119,7 @@ T Stack<T>::peek(){
  */
 template <class T>
 bool Stack<T>::isEmpty() const {
-    /**
-     * @todo Your code here!
-     */
+    return num_items == 0;
 };
 
 /**
@@ -124,9 +132,7 @@ bool Stack<T>::isEmpty() const {
  */
 template <class T>
 size_t Stack<T>::capacity() const {
-    /**
-     * @todo Your code here!
-     */
+    return max_items;
 };
 
 /**
@@ -136,9 +142,7 @@ size_t Stack<T>::capacity() const {
  */
 template <class T>
 size_t Stack<T>::size() const {
-    /**
-     * @todo Your code here!
-     */
+    return num_items;
 };
 
 /**
@@ -149,7 +153,11 @@ size_t Stack<T>::size() const {
  */
 template <class T>
 void Stack<T>::resize(size_t n){
-    /**
-     * @todo Your code here!
-     */
+    T* newStack = new T[n];
+    for (size_t i = 0; i < num_items; i++) {
+        newStack[i] = items[i];
+    }
+    delete[] items;
+    max_items = n;
+    items = newStack;
 };
