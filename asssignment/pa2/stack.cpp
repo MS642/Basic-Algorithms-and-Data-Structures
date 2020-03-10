@@ -10,8 +10,6 @@
  * be DEFAULTCAPACITY defined in stack.h.
  *
  */
-#include <iostream>
-using namespace std;
 
 template <class T> 
 Stack<T>::Stack()
@@ -66,7 +64,7 @@ template <class T>
 T Stack<T>::pop(){
     T lastIn = items[num_items - 1];
     num_items--;
-    int n = max_items / SHRINKRATE;
+    size_t n = max_items / SHRINKRATE;
     if ((max_items / EXPANSIONFACTOR) >= DEFAULTCAPACITY && num_items < n) {
         resize(max_items/EXPANSIONFACTOR);
     }
@@ -106,10 +104,7 @@ T Stack<T>::remove()
  */
 template <class T>
 T Stack<T>::peek(){
-    if (!isEmpty()) {
-        return items[num_items - 1];
-    }
-    return 0;
+    return items[num_items - 1];
 };
 
 /**

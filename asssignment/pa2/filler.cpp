@@ -4,18 +4,18 @@
  *
  */
 
-/**
- * Performs a multi-point flood fill using breadth first search.
- *
- * @param config      FillerConfig struct to setup the fill
- * @return animation  object illustrating progression of flood fill algorithm
- */
-animation filler::fillBFS(FillerConfig &config)
+#include <vector>
+#include <map>
+using namespace std;
+ /**
+  * Performs a multi-point flood fill using breadth first search.
+  *
+  * @param config      FillerConfig struct to setup the fill
+  * @return animation  object illustrating progression of flood fill algorithm
+  */
+animation filler::fillBFS(FillerConfig& config)
 {
-    /**
-     * @todo Your code here! You should replace the following line with a
-     * correct call to fill.
-     */
+    return fill<Queue>(config);
 }
 
 /**
@@ -30,6 +30,7 @@ animation filler::fillDFS(FillerConfig &config)
      * @todo Your code here! You should replace the following line with a
      * correct call to fill.
      */
+    return fill<Stack>(config);
 }
 
 /**
@@ -106,4 +107,72 @@ template <template <class T> class OrderingStructure> animation filler::fill(Fil
      *        it will be the one we test against.
      *
      */
+    //cout << "hello" << endl;
+    int size = config.centers.size();
+    animation output;
+    output.addFrame(config.img);
+    unsigned int width = config.img.width();
+    unsigned int height = config.img.height();
+    vector<vector<bool>> visitedPoints(width, vector<bool>(height, false));
+
+    vector<int> queueComplete;
+    vector<OrderingStructure<point>> queue(size);
+    for (int i = 0; i < size; i++) {
+        point newPoint;
+        newPoint.c = config.centers[i];
+        newPoint.x = newPoint.c.x;
+        newPoint.y = newPoint.c.y;
+        queue[i].add(newPoint);
+    }
+
+    int counter = 0;
+    for (int i = 0; i < size; i++) {
+        while (!queue[i].isEmpty()) {
+            point applyChange = queue[i].remove();
+            if (visitedPoints[applyChange.x][applyChange.y]) {
+                continue;
+            }
+            counter++;
+            colorPicker* picker = (config.pickers[i]);
+            HSLAPixel* pixel = config.img.getPixel(applyChange.x, applyChange.y);
+            *pixel = (*picker)(applyChange);
+            if (counter % config.frameFreq == 0) {
+                output.addFrame(config.img);
+            }
+            visitedPoints[applyChange.x][applyChange.y] = true;
+
+            unsigned int x = applyChange.x;
+            unsigned int y = applyChange.y;
+            if (x > 0) {
+                point west = applyChange;
+                west.x--;
+                if (config.img.getPixel(west.x, west.y)->dist(west.c.color) <= config.tolerance) {
+                    queue[i].add(west);
+                }
+            }
+            if (y < (height - 1)) {
+                point south = applyChange;
+                south.y++;
+                if (config.img.getPixel(south.x, south.y)->dist(south.c.color) <= config.tolerance) {
+                    queue[i].add(south);
+                }
+            }
+            if (x < (width - 1)) {
+                point east = applyChange;
+                east.x++;
+                if (config.img.getPixel(east.x, east.y)->dist(east.c.color) <= config.tolerance) {
+                    queue[i].add(east);
+                }
+            }
+            if (y > 0) {
+                point north = applyChange;
+                north.y--;
+                if (config.img.getPixel(north.x, north.y)->dist(north.c.color) <= config.tolerance) {
+                    queue[i].add(north);
+                }
+            }
+        }
+    }
+    output.addFrame(config.img);
+    return output;
 }

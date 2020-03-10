@@ -13,11 +13,11 @@ TEST_CASE("stack::basic functions", "[weight=1][part=stack]")
     Stack<int> intStack;
     vector<int> result;
     vector<int> expected;
-    for (int i = 10; i > 0; i--)
+    for (int i = 10000; i > 0; i--)
     {
         expected.push_back(i);
     }
-    for (int i = 1; i <= 10; i++)
+    for (int i = 1; i <= 10000; i++)
     {
         intStack.push(i);
     }
@@ -36,19 +36,22 @@ TEST_CASE("queue::basic functions", "[weight=1][part=queue]")
     Queue<int> intQueue;
     vector<int> result;
     vector<int> expected;
-    for (int i = 1; i <= 10; i++)
+    for (int i = 1; i <= 100000; i++)
     {
         expected.push_back(i);
     }
-    for (int i = 1; i <= 10; i++)
+   // cout << "=========enqueu======" << endl;
+    for (int i = 1; i <= 100000; i++)
     {
+        //cout << i << endl;
         intQueue.enqueue(i);
     }
-    // cout << intStack.peek() << endl;
+    // cout << "=========dequeue======" << endl;
     while (!intQueue.isEmpty())
     {
-        result.push_back(intQueue.dequeue());
-        // cout << intStack.pop() << " ";
+        int x = intQueue.dequeue();
+        result.push_back(x);
+         //cout << x << endl;
     }
     REQUIRE(result == expected);
 }
